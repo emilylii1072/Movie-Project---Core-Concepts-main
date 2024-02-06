@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <title>Movie Database</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    header {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 24px;
+      font-family: 'Fredoka One', cursive;
+      text-align: left;
+    }
+    .container {
+      width: 80%;
+      margin: auto;
+      overflow: hidden;
+    }
+    .search-sort-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+    }
+    .search-form {
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+    }
+    .search-form input[type="text"], .search-form button {
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .search-form button {
+      background: #16a085;
+      color: white;
+      cursor: pointer;
+    }
+    .sort-options {
+      display: flex;
+      gap: 10px;
+    }
+    .sort-options button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .movie-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .movie-item {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .movie-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .movie-info {
+      display: none;
+      padding-top: 10px;
+    }
+    .movie-actions a {
+      text-decoration: none;
+      color: #0d6efd;
+      margin-right: 10px;
+    }
+    .movie-actions button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #filterForm {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+  }
+
+  #filterForm input[type="text"], 
+  #filterForm input[type="number"], 
+  #filterForm button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: calc(50% - 10px);
+    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+  }
+
+  #filterForm button {
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    width: auto;
+    display: block;
+  }
+
+  #filterForm button:hover {
+    background-color: #0056b3;
+  }
+
+    #toggleFiltersBtn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #filterForm {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  #filterForm input, #filterForm button {
+    margin: 5px 0;
+    padding: 10px;
+    width: calc(50% - 12px);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  #filterForm button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    width: auto;
+  }
+
+  @media (max-width: 600px) {
+    #filterForm input, #filterForm button {
+      width: 100%;
+    }
+  }
+  @media (max-width: 768px) {
+    #filterForm input, #filterForm button {
+      width: 100%;
+    }
+  }
+  </style>
+  <script>
+    function toggleInfo(movieId) {
+      var infoDiv = document.getElementById('info-' + movieId);
+      if (infoDiv.style.display === 'none' || infoDiv.style.display === '') {
+        infoDiv.style.display = 'block';
+      } else {
+        infoDiv.style.display = 'none';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+    const toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
+    const filterForm = document.getElementById('filterForm');
+
+    // Initially hide the filter form
+    filterForm.style.display = 'none';
+
+    toggleFiltersBtn.addEventListener('click', function() {
+      if (filterForm.style.display === 'none') {
+        filterForm.style.display = 'block';
+        this.textContent = 'Hide Filters';
+      } else {
+        filterForm.style.display = 'none';
+        this.textContent = 'Show Filters';
+      }
+    });
+  });
+  </script>
+</head>
+<body>
+  <header>
+    MovieMonsters
+  </header>
+  <% if (flashMessages.info) { %>
+    <div class="alert alert-info">
+      <%= flashMessages.info %>
+    </div>
+  <% } %>
+  <div class="container">
+    <div class="search-sort-bar">
+      <form class="search-form" action="/search" method="POST">
+        <input type="text" name="movieTitle" placeholder="Search more movies...">
+        <button type="submit">Search</button>
+      </form>
+      <div class="sort-options">
+        <form action="/sort" method="POST">
+          <button type="submit" name="sort" value="title">Title</button>
+          <!-- Add more sorting options if needed -->
+        </form>
+        <form action="/sortYear" method="POST">
+          <button type="submit" name="sort" value="latest">Latest</button>
+        </form>
+        <form action="/sortRating" method="POST">
+          <button type="submit" name="sort" value="rating">Rating</button>
+        </form>
+        <form action="/sortWatches" method="POST">
+          <button type="submit" name="sort" value="Watches">Times Watched</button>
+        </form>
+        <form action="/reverse" method="POST">
+          <button type="submit" name="sort" value="reverse">Reverse</button>
+        </form>
+      </div>
+    </div>
+    <div class="header-section">
+      <button id="toggleFiltersBtn">Show Filters</button>
+
+      <form action="/filter" method="GET" id="filterForm">
+        <input type="text" name="actors" placeholder="Actors (comma-separated)">
+        <input type="text" name="title" placeholder="Title Keywords">
+        <input type="number" name="ratingFrom" placeholder="IMDb Rating From">
+        <input type="number" name="ratingTo" placeholder="IMDb Rating To">
+        <input type="number" name="yearFrom" placeholder="Year From">
+        <input type="number" name="yearTo" placeholder="Year To">
+        <input type="text" name="languages" placeholder="Languages (comma-separated)">
+        <button type="submit">Filter</button>
+      </form>
+    </div>
+    
+    <h>Movies: <%= totalMovies %></h>
+    <div class="movie-list">
+      <% savedMovies.forEach(movie => { %>
+        <div class="movie-item">
+          <% if (movie.poster) { %>
+            <img src="<%= movie.poster %>" alt="<%= movie.title %>">
+          <% } %>
+          <h3><%= movie.title %></h3>
+          <button onclick="toggleInfo('<%= movie._id %>')">Info</button>
+          <div class="movie-info" id="info-<%= movie._id %>">
+           <p>Year: <%= movie.year %></p>
+            <p>Actors: <%= movie.actors %></p>
+            <p>Plot: <%= movie.plot %></p>
+            <p>Language: <%= movie.language %></p>
+            <p>IMDB Rating: <%= movie.imdbRating %></p>
+            <p>Watched: <%= movie.timesWatched %></p>
+          </div>
+          <div class="movie-actions">
+              <a href="watch/<%= movie._id %>">Watch</a>
+              <a href="delete/<%= movie._id %>">Delete</a>
+            </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>  
+</body>
+</html>

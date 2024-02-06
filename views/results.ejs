@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Database</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #2c3e50;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333; /* Improved text color for readability */
+    }
+
+    .container {
+      max-width: 800px;
+      width: 90%; /* Adjusted for responsiveness */
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .movie-details {
+      text-align: center; /* Centering the content for a better look */
+    }
+
+    .movie-details img {
+      max-width: 100%; /* Ensure image does not overflow its container */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .movie-details h2, .movie-details p {
+      margin: 0 0 10px;
+      line-height: 1.6;
+    }
+
+    .save-button, .search-again-link {
+      display: inline-block; /* Align buttons and links better */
+      margin-top: 10px; /* Added space above the button and link */
+    }
+
+    .save-button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .save-button:hover {
+      background-color: #0056b3;
+    }
+
+    .search-again-link {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .search-again-link:hover {
+      text-decoration: underline;
+    }
+
+    .not-found-message {
+      font-size: 18px;
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <% if (movie) { %>
+      <div class="movie-details">
+        <% if (movie.Poster) { %>
+          <img src="<%= movie.Poster %>" alt="<%= movie.Title %> Poster">
+        <% } %>
+        <h2><%= movie.Title %></h2>
+        <p><strong>Year:</strong> <%= movie.Year %></p>
+        <p><strong>Plot:</strong> <%= movie.Plot %></p>
+        <% if (movie.Actors) { %>
+          <p><strong>Actors:</strong> <%= movie.Actors %></p>
+        <% } %>
+        <% if (movie.Language) { %>
+          <p><strong>Language:</strong> <%= movie.Language %></p>
+        <% } %>
+        <% if (movie.imdbRating) { %>
+          <p><strong>IMDb Rating:</strong> <%= movie.imdbRating %></p>
+        <% } %>
+      </div>
+
+      <form action="/save" method="POST">
+        <input type="hidden" name="title" value="<%= movie.Title %>">
+        <input type="hidden" name="year" value="<%= movie.Year %>">
+        <input type="hidden" name="poster" value="<%= movie.Poster %>">
+        <input type="hidden" name="actors" value="<%= movie.Actors %>">
+        <input type="hidden" name="plot" value="<%= movie.Plot %>">
+        <input type="hidden" name="language" value="<%= movie.Language %>">
+        <input type="hidden" name="imdbRating" value="<%= movie.imdbRating %>">
+        <button class="save-button" type="submit">Save</button>
+      </form>
+
+      <a class="search-again-link" href="/">Search Again</a>
+    <% } else { %>
+      <p class="not-found-message">Movie not found.</p>
+    <% } %>
+  </div>
+</body>
+</html>
